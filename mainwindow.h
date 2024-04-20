@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <rulemanager.h>
 #include <QString>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

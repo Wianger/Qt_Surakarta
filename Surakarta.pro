@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     agentbase.cpp \
     board.cpp \
+    choosedlg.cpp \
     game.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 HEADERS += \
     agentbase.h \
     board.h \
+    choosedlg.h \
     common.h \
     game.h \
     mainwindow.h \

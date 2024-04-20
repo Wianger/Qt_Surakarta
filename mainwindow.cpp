@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QBrush>
 #include <QString>
+#include <QDialog>
 
 
 MainWindow::MainWindow(QWidget *parent)

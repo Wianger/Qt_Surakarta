@@ -1,12 +1,15 @@
-\
 #include <mainwindow.h>
+#include "choosedlg.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
+    ChooseDlg dlg;
+    while(dlg.run()){
+        MainWindow w;
+        w.show();
+        return a.exec();
+    }
 }
