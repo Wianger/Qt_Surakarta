@@ -1,0 +1,11 @@
+release/agentbase.o
+release/board.o
+release/choosedlg.o
+release/game.o
+release/main.o
+release/mainwindow.o
+release/piece.o
+release/reason.o
+release/rulemanager.o
+release/moc_choosedlg.o
+release/moc_mainwindow.o
