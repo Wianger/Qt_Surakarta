@@ -108,6 +108,7 @@ public:
     SurakartaPosition position_;
     PieceColor color_;
     unsigned int r_ = 30;
+    unsigned int sr_=35;
 };
 
 #endif // PIECE_H

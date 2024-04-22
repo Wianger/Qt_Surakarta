@@ -1,0 +1,11 @@
+debug/agentbase.o
+debug/board.o
+debug/choosedlg.o
+debug/game.o
+debug/main.o
+debug/mainwindow.o
+debug/piece.o
+debug/reason.o
+debug/rulemanager.o
+debug/moc_choosedlg.o
+debug/moc_mainwindow.o

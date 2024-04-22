@@ -49,6 +49,7 @@ public:
         rule_manager_(std::make_shared<SurakartaRuleManager>(board_, game_info_)),
         agent_(std::make_shared<SurakartaAgentBase>(board_, game_info_, rule_manager_)) {}
 
+
     /**
      * @brief Start the game. If file_name is empty, the board will be initialized to the initial state. Otherwise, the board will be initialized to the state in the file.
      */

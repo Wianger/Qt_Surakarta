@@ -20,7 +20,8 @@ enum class SurakartaIllegalMoveReason {
     ILLIGAL_CAPTURE_MOVE,      // try to capture a opponent's piece, but the move can't consist any corner loop
     ILLIGAL_NON_CAPTURE_MOVE,  // otherwise
     GAME_ALREADY_END,          // unused
-    GAME_NOT_START             // unused
+    GAME_NOT_START,       // unused
+    TIMEOUT
 };
 
 enum class SurakartaEndReason {
