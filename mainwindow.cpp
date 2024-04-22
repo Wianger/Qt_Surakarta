@@ -15,12 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
     setFixedSize(1200,800);
     game.StartGame();
     ui->label->setText("Current_Player : " + str_player(game.game_info_->current_player_));
-    countDown = 10; // 初始倒计时时间为10秒
+    countDown = CountDown;// 初始倒计时时间为10秒
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::updateCountdown);
     timer->start(1000); // 每秒触发一次updateCountdown
     QPushButton *forfeitButton = new QPushButton("认输", this);
-    forfeitButton->setGeometry(1000, 120, 100, 40); // 设置按钮的位置和大小
+    forfeitButton->setGeometry(800, 150, 100, 40); // 设置按钮的位置和大小
     connect(forfeitButton, &QPushButton::clicked, this, &MainWindow::forfeitGame);
 }
 
@@ -37,7 +37,7 @@ void MainWindow::paintEvent(QPaintEvent *)
     font.setPointSize(20);
     painter.setFont(font);
     painter.setPen(Qt::black);
-    painter.drawText(1000, 80, "倒计时：" + QString::number(countDown) + " 秒");
+    painter.drawText(800, 100, "倒计时：" + QString::number(countDown) + " 秒");
 
     //绘制棋盘
     QPen pen;
@@ -72,7 +72,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *ev)
                     }
                     else{
 
-                    countDown = 10;
+                    countDown = CountDown;
                     timer->start(1000);
                     updatePlayerInfo();
                     update();
@@ -229,7 +229,7 @@ void MainWindow::restartGame()
 
     // 更新界面
     updatePlayerInfo();
-    countDown = 10;
+    countDown = CountDown;
     timer->start(1000);
     update();
 }

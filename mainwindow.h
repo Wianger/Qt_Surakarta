@@ -36,6 +36,7 @@ public:
     bool gameEnded;
     int select_i;
     int select_j;
+    int CountDown=30;
 void restartGame();
     void forfeitGame();
 
