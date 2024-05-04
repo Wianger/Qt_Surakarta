@@ -1,31 +1,20 @@
+
 #include "rulemanager.h"
-#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
-SurakartaPosition SurakartaRuleManager::row_line(SurakartaPosition p, circle c) {
+SurakartaPosition SurakartaRuleManager::row_line(SurakartaPosition p, unsigned int c) {
     // 将具体的行列映射到outer/inner中的行列
     int r = 4, l = 4;
-    if (c == circle::out) {
-        if (p.x == 2)
-            r = 0;
-        else if (p.x == 3)
-            r = 2;
-        if (p.y == 3)
-            l = 1;
-        else if (p.y == 2)
-            l = 3;
-
-    } else if (c == circle::in) {
-        if (p.x == 1)
-            r = 0;
-        else if (p.x == 4)
-            r = 2;
-        if (p.y == 4)
-            l = 1;
-        else if (p.y == 1)
-            l = 3;
-    }
+    if (p.x == c)
+        r = 0;
+    else if (p.x == board_size_ - 1 - c)
+        r = 2;
+    if (p.y == c)
+        l = 3;
+    else if (p.y == board_size_ - 1 - c)
+        l = 1;
 
     return SurakartaPosition(r, l);
 }
@@ -41,94 +30,6 @@ SurakartaIllegalMoveReason SurakartaRuleManager::JudgeMove(const SurakartaMove& 
     // TODO: Implement this function.
     SurakartaPlayer current_player = game_info_->current_player_;
     SurakartaPosition mf = move.from, mt = move.to;
-    std::vector<std::vector<SurakartaPiece>> outer, inner;  // outer: x2,y3,x3,y2
-        // inner: x1,y4,x4,y1
-    std::vector<SurakartaPosition> outerlin, innerlin;      // 外/内圈相邻直线
-    std::vector<SurakartaPiece> t;
-    int direction[3] = {0, 1};               // 初始移动方向
-    int rotation[3][3] = {{0, 1}, {-1, 0}};  // 逆时针旋转90度
-    SurakartaPosition op(2, 0), ip(1, 0);    // 外圈和内圈的起始位置
-
-    do {
-        // 取出外圈上的所有棋子
-        if ((*board_)[op.x][op.y]->color_ != PieceColor::NONE) {
-            t.push_back(*(*board_)[op.x][op.y]);
-        }
-        op.x += direction[0], op.y += direction[1];
-        if (op.x == (unsigned)-1 || op.x == 6 || op.y == (unsigned)-1 || op.y == 6) {
-            outer.push_back(t);
-            t.clear();
-            if (op.x == (unsigned)-1 || op.x == 6) {
-                op.y = (op.x == (unsigned)-1 ? 0 : 5);
-                op.x -= 3 * direction[0];
-            } else if (op.y == (unsigned)-1 || op.y == 6) {
-                op.x = (op.y == (unsigned)-1 ? 5 : 0);
-                op.y -= 3 * direction[1];
-            }
-            int temp1 = direction[0], temp2 = direction[1];
-            direction[0] = rotation[0][0] * temp1 + rotation[0][1] * temp2;
-            direction[1] = rotation[1][0] * temp1 + rotation[1][1] * temp2;
-        }
-
-    } while (op != SurakartaPosition(2, 0));
-    // 外圈的相邻直线(逆时针方向)
-    for (int i = 0; i < 4; i++) {
-        outerlin.push_back(SurakartaPosition(i, (i + 1) % 4));
-    }
-    for (int i = 0; i < 4; i++) {
-        if (outer[i].empty()) {
-            continue;
-        }
-        int j = (i + 1) % 4;
-        do {
-            if (!outer[j].empty()) {
-                outerlin.push_back(SurakartaPosition(i, j));
-                break;
-            }
-            j = (j + 1) % 4;
-        } while (j != (i + 1) % 4);
-    }
-
-    t.clear();
-    direction[0] = 0, direction[1] = 1;
-    do {
-        // 取出内圈上的所有棋子
-        if ((*board_)[ip.x][ip.y]->color_ != PieceColor::NONE) {
-            t.push_back(*(*board_)[ip.x][ip.y]);
-        }
-        ip.x += direction[0], ip.y += direction[1];
-        if (ip.x == (unsigned)-1 || ip.x == 6 || ip.y == (unsigned)-1 || ip.y == 6) {
-            inner.push_back(t);
-            t.clear();
-            if (ip.x == (unsigned)-1 || ip.x == 6) {
-                ip.y = (ip.x == (unsigned)-1 ? 0 : 5);
-                ip.x -= 2 * direction[0];
-            } else if (ip.y == (unsigned)-1 || ip.y == 6) {
-                ip.x = (ip.y == (unsigned)-1 ? 5 : 0);
-                ip.y -= 2 * direction[1];
-            }
-            int temp1 = direction[0], temp2 = direction[1];
-            direction[0] = rotation[0][0] * temp1 + rotation[0][1] * temp2;
-            direction[1] = rotation[1][0] * temp1 + rotation[1][1] * temp2;
-        }
-    } while (ip.x != 1 || ip.y != 0);
-    for (int i = 0; i < 4; i++) {
-        innerlin.push_back(SurakartaPosition(i, (i + 1) % 4));
-    }
-    // 内圈的相邻直线(逆时针方向)
-    for (int i = 0; i < 4; i++) {
-        if (inner[i].empty()) {
-            continue;
-        }
-        int j = (i + 1) % 4;
-        do {
-            if (!inner[j].empty()) {
-                innerlin.push_back(SurakartaPosition(i, j));
-                break;
-            }
-            j = (j + 1) % 4;
-        } while (j != (i + 1) % 4);
-    }
 
     if (move.player != current_player) {
         // It's not the player's turn.
@@ -162,51 +63,79 @@ SurakartaIllegalMoveReason SurakartaRuleManager::JudgeMove(const SurakartaMove& 
             return SurakartaIllegalMoveReason::LEGAL_NON_CAPTURE_MOVE;
     } else {
         // The target position is occupied by the opponent's piece.
-        SurakartaPosition ftemp = row_line(mf, circle::out), ttemp = row_line(mt, circle::out);  // 两个位置在外圈的位置
+        for (unsigned int i = 1; i < board_size_ / 2; i++) {
+            SurakartaPosition ftemp, ttemp;
+            int direction[3] = {0, 1};               // 初始移动方向
+            int rotation[3][3] = {{0, 1}, {-1, 0}};  // 逆时针旋转90度
+            std::vector<std::vector<SurakartaPiece>> piece;
+            std::vector<SurakartaPosition> line;
+            std::vector<SurakartaPiece> t;
+            SurakartaPosition start(i, 0);  // 起始位置
 
-        for (std::vector<SurakartaPosition>::size_type i = 0; i < outerlin.size(); i++) {
-            auto x = outerlin[i].x, y = outerlin[i].y;
-            if ((ftemp.x == x || ftemp.y == x) && (ttemp.x == y || ttemp.y == y)) {
-                // 两个位置在相邻的直线上
-                int id = outer[x].size() - 1;
-                if (mf == outer[x][id].position_ && mf == outer[y][0].position_)
-                    // 特判争议下法
-                    if (mt == outer[y][1].position_)
-                        return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                if (mf == outer[x][id].position_ && mt == outer[y][0].position_)
-                    // the source position是X上最后一个棋子，the target position是Y上第一个棋子
-                    return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-            }
-            // 考虑顺时针吃子的情况，相当于由target position到source position
-            if ((ftemp.x == y || ftemp.y == y) && (ttemp.x == x || ttemp.y == x)) {
-                int id = outer[x].size() - 1;
-                if (mf == outer[y][0].position_ && mf == outer[x][id].position_)
-                    if (mt == outer[x][id - 1].position_)
-                        return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                if (mf == outer[y][0].position_ && mt == outer[x][id].position_)
-                    return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-            }
-        }
+            do {
+                // 取出外圈上的所有棋子
+                if ((*board_)[start.x][start.y]->color_ != PieceColor::NONE) {
+                    t.push_back(*(*board_)[start.x][start.y]);
+                }
+                start.x += direction[0], start.y += direction[1];
+                if (start.x == (unsigned)-1 || start.x == board_size_ || start.y == (unsigned)-1 || start.y == board_size_) {
+                    piece.push_back(t);
+                    t.clear();
+                    if (start.x == (unsigned)-1 || start.x == board_size_) {
+                        start.y = (start.x == (unsigned)-1 ? 0 : board_size_ - 1);
+                        start.x -= (i + 1) * direction[0];
+                    } else if (start.y == (unsigned)-1 || start.y == board_size_) {
+                        start.x = (start.y == (unsigned)-1 ? board_size_ - 1 : 0);
+                        start.y -= (i + 1) * direction[1];
+                    }
+                    int temp1 = direction[0], temp2 = direction[1];
+                    direction[0] = rotation[0][0] * temp1 + rotation[0][1] * temp2;
+                    direction[1] = rotation[1][0] * temp1 + rotation[1][1] * temp2;
+                }
 
-        ftemp = row_line(mf, circle::in), ttemp = row_line(mt, circle::in);  // 两个位置在内圈的位置
+            } while (start != SurakartaPosition(i, 0));
 
-        for (std::vector<SurakartaPosition>::size_type i = 0; i < innerlin.size(); i++) {
-            auto x = innerlin[i].x, y = innerlin[i].y;
-            if ((ftemp.x == x || ftemp.y == x) && (ttemp.x == y || ttemp.y == y)) {
-                auto id = inner[x].size() - 1;
-                if (mf == inner[x][id].position_ && mf == inner[y][0].position_)
-                    if (mt == inner[y][1].position_)
-                        return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                if (mf == inner[x][id].position_ && mt == inner[y][0].position_)
-                    return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
+            for (int j = 0; j < 4; j++) {
+                line.push_back(SurakartaPosition(j, (j + 1) % 4));
             }
-            if ((ftemp.x == y || ftemp.y == y) && (ttemp.x == x || ttemp.y == x)) {
-                auto id = inner[x].size() - 1;
-                if (mf == inner[y][0].position_ && mf == inner[x][id].position_)
-                    if (mt == inner[x][id - 1].position_)
+
+            for (int k = 0; k < 4; k++) {
+                if (piece[k].empty())
+                    continue;
+
+                int j = (k + 1) % 4;
+                do {
+                    if (!piece[j].empty()) {
+                        line.push_back(SurakartaPosition(k, j));
+                        break;
+                    }
+                    j = (j + 1) % 4;
+                } while (j != (k + 1) % 4);
+            }
+
+            ftemp = row_line(mf, i), ttemp = row_line(mt, i);
+            for (std::vector<SurakartaPosition>::size_type j = 0; j < line.size(); j++) {
+                auto x = line[j].x, y = line[j].y;
+                if ((ftemp.x == x || ftemp.y == x) && (ttemp.x == y || ttemp.y == y)) {
+                    // 两个位置在相邻的直线上
+                    int id = piece[x].size() - 1;
+                    if (mf == piece[x][id].position_ && mf == piece[y][0].position_)
+                        // 特判争议下法
+                        if (mt == piece[y][1].position_)
+                            return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
+                    if (mf == piece[x][id].position_ && mt == piece[y][0].position_)
+                        // the source position是X上最后一个棋子，the target position是Y上第一个棋子
                         return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                if (mf == inner[y][0].position_ && mt == inner[x][id].position_)
-                    return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
+                }
+                // 考虑顺时针吃子的情况，相当于由target position到source position
+                if ((ftemp.x == y || ftemp.y == y) && (ttemp.x == x || ttemp.y == x)) {
+                    int id = piece[x].size() - 1;
+                    if (mf == piece[y][0].position_ && mf == piece[x][id].position_)
+                        if (mt == piece[x][id - 1].position_)
+                            return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
+                    if (mf == piece[y][0].position_ && mt == piece[x][id].position_)
+                        return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
+                }
             }
         }
         return SurakartaIllegalMoveReason::ILLIGAL_CAPTURE_MOVE;
@@ -235,8 +164,8 @@ std::pair<SurakartaEndReason, SurakartaPlayer> SurakartaRuleManager::JudgeEnd(co
 
     // 计算黑白棋子数
     int b_num = 0, w_num = 0;
-    for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 6; j++) {
+    for (unsigned int i = 0; i < board_size_; i++) {
+        for (unsigned int j = 0; j < board_size_; j++) {
             if ((*board_)[i][j]->color_ == PieceColor::BLACK)
                 b_num++;
             else if ((*board_)[i][j]->color_ == PieceColor::WHITE)

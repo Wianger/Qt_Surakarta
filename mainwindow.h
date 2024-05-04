@@ -28,15 +28,16 @@ public:
     void drawLine(QPainter&);
     void drawCycle(QPainter&, int);
     void drawStone(QPainter&);
-    void endGame(const SurakartaMoveResponse& response);
+    void endGame();
     QString endReasonToString(SurakartaEndReason endReason);
     QString str_player(SurakartaPlayer);
     void updatePlayerInfo(); // 更新玩家信息的槽函数
     bool is_select=0;
     bool gameEnded;
-    int select_i;
-    int select_j;
-    int CountDown=30;
+    unsigned int select_i;
+    unsigned int select_j;
+    int CountDown = 10;
+
 void restartGame();
     void forfeitGame();
 

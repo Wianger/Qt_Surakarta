@@ -31,7 +31,7 @@ enum class SurakartaEndReason {
     TRAPPED,       // unused, one player's pieces are all trapped, no legal move can be made.
     RESIGN,        // one player resigns.
     TIMEOUT,       // one player's time is out.
-    ILLIGAL_MOVE,  // one player makes an illegal move
+    ILLIGAL_MOVE,    // one player makes an illegal move
 };
 
 bool IsLegalMoveReason(SurakartaIllegalMoveReason reason);

@@ -13,7 +13,6 @@ public:
     ~ChooseDlg();
 
     QPushButton* _button;
-    int run();
 signals:
 
 public slots:

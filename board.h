@@ -6,7 +6,7 @@
 #include "piece.h"
 #include <QPoint>
 
-#define BOARD_SIZE 6
+#define BOARD_SIZE 20
 
 class SurakartRow : public std::vector<std::shared_ptr<SurakartaPiece>> {
 public:
@@ -19,7 +19,7 @@ public:
     unsigned int board_size_;
     int boardSize = 400;
     int gapSize = 200;
-    int squareSize = boardSize / 5;
+    int squareSize = boardSize / (board_size_ - 1);
     SurakartaBoard(unsigned int board_size)
         : board_size_(board_size) {
         for (unsigned int i = 0; i < board_size_; i++) {
@@ -58,7 +58,7 @@ public:
                     color = PieceColor::NONE;
                     break;
                 }
-                board[x][y] = std::make_shared<SurakartaPiece>(x, y, color);
+                board[x][y] = std::make_shared<SurakartaPiece>(x, y, color, 180 / board.board_size_);
             }
         }
         return is;

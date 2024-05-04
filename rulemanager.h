@@ -1,14 +1,11 @@
-#ifndef RULEMANAGER_H
-#define RULEMANAGER_H
+#pragma once
 
 #include <iostream>
 #include <memory>
 #include <vector>
 #include "common.h"
-#include <board.h>
+#include "board.h"
 
-enum class circle { out = 2,
-                    in = 1 };
 class SurakartaRuleManager {
 public:
     SurakartaRuleManager() = default;
@@ -51,7 +48,7 @@ public:
 public:
     // TODO:
     //  define your own functions/variables here
-    SurakartaPosition row_line(SurakartaPosition p, circle c);
+    SurakartaPosition row_line(SurakartaPosition, unsigned int);
     void HelloWorld();
 
     void InlineHelloWorld() {
@@ -60,6 +57,3 @@ public:
 
     int bye_world_ = 0;
 };
-
-
-#endif // RULEMANAGER_H

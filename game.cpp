@@ -6,11 +6,11 @@ void SurakartaGame::StartGame(std::string file_name) {
         for (unsigned int y = 0; y < board_size_; y++) {
             for (unsigned int x = 0; x < board_size_; x++) {
                 if (y < 2) {
-                    (*board_)[x][y] = std::make_shared<SurakartaPiece>(x, y, PieceColor::BLACK);
+                    (*board_)[x][y] = std::make_shared<SurakartaPiece>(x, y, PieceColor::BLACK, piece_r);
                 } else if (y >= board_size_ - 2) {
-                    (*board_)[x][y] = std::make_shared<SurakartaPiece>(x, y, PieceColor::WHITE);
+                    (*board_)[x][y] = std::make_shared<SurakartaPiece>(x, y, PieceColor::WHITE, piece_r);
                 } else {
-                    (*board_)[x][y] = std::make_shared<SurakartaPiece>(x, y, PieceColor::NONE);
+                    (*board_)[x][y] = std::make_shared<SurakartaPiece>(x, y, PieceColor::NONE, piece_r);
                 }
             }
         }
@@ -58,7 +58,7 @@ SurakartaMoveResponse SurakartaGame::Move(const SurakartaMove& move) {
     } else if (move_reason == SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE) {
         (*board_)[move.to.x][move.to.y] = (*board_)[move.from.x][move.from.y];
         (*board_)[move.to.x][move.to.y]->SetPosition(move.to);
-        (*board_)[move.from.x][move.from.y] = std::make_shared<SurakartaPiece>(move.from.x, move.from.y, PieceColor::NONE);
+        (*board_)[move.from.x][move.from.y] = std::make_shared<SurakartaPiece>(move.from.x, move.from.y, PieceColor::NONE, piece_r);
         rule_manager_->OnUpdateBoard();
     }
 
@@ -70,7 +70,7 @@ bool SurakartaGame::GetRowCol(QPointF p1, QPointF p2)
 {
     double x = std::pow(p1.x() - p2.x(), 2);
     double y = std::pow(p1.y() - p2.y(), 2);
-    if(std::sqrt(x + y) <= 30)
+    if(std::sqrt(x + y) <= piece_r)
         return true;
     return false;
 }

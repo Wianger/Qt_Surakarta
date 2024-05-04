@@ -96,6 +96,7 @@ public:
     std::shared_ptr<SurakartaGameInfo> game_info_;
     std::shared_ptr<SurakartaRuleManager> rule_manager_;
     std::shared_ptr<SurakartaAgentBase> agent_;
+    unsigned int piece_r = 180 / board_size_;
     bool GetRowCol(QPointF, QPointF);
     QPoint coordinate(int i, int j);
 

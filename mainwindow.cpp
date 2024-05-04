@@ -6,7 +6,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -44,8 +43,8 @@ void MainWindow::paintEvent(QPaintEvent *)
     pen.setWidth(3);
     painter.setPen(pen);
     drawLine(painter);
-    drawCycle(painter, game.board_->squareSize);
-    drawCycle(painter, game.board_->squareSize * 2);
+    for (unsigned int var = 1; var < game.board_size_ / 2; ++var)
+        drawCycle(painter, game.board_->squareSize * var);
     drawStone(painter);
 }
 
@@ -63,22 +62,25 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *ev)
                     MainWindow::select_j=j;
                     update();
                 }
+                else if(game.game_info_->from == SurakartaPosition(i, j)){
+                    game.game_info_->from = SurakartaPosition(-1, -1);
+                    MainWindow::is_select = 0;
+                    update();
+                }
                 else{
                     game.game_info_->to = SurakartaPosition(i, j);
-                    SurakartaMoveResponse response=game.Move(SurakartaMove(game.game_info_->from, game.game_info_->to, game.game_info_->current_player_));
-                    if (response.IsEnd())
-                    {
-                          endGame(response);
-                    }
-                    else{
+                    game.Move(SurakartaMove(game.game_info_->from,game.game_info_->to,game.game_info_->current_player_));
+                    if (game.game_info_->IsEnd())
+                         endGame();
 
-                    countDown = CountDown;
-                    timer->start(1000);
-                    updatePlayerInfo();
-                    update();
+                    else{
+                        countDown = CountDown;
+                        timer->start(1000);
+                        updatePlayerInfo();
                     }
                     game.game_info_->from = SurakartaPosition(-1, -1);
                     MainWindow::is_select=0;
+                    update();
                 }
                 return;
             }
@@ -93,28 +95,31 @@ void MainWindow::updateCountdown()
         update(); // 每秒更新界面
     } else {
         timer->stop();
-        SurakartaMoveResponse response(SurakartaIllegalMoveReason::TIMEOUT, SurakartaEndReason::TIMEOUT, game.game_info_->current_player_);
-        endGame(response);
+        game.game_info_->end_reason_ = SurakartaEndReason::TIMEOUT;
+        SurakartaPlayer cp = game.game_info_->current_player_;
+        if(cp == PieceColor::BLACK)
+            game.game_info_->winner_ = PieceColor::WHITE;
+        else
+            game.game_info_->winner_ = PieceColor::BLACK;
+        endGame();
     }
 }
 
-void MainWindow::endGame(const SurakartaMoveResponse& response)
+void MainWindow::endGame()
 {
     gameEnded = true;
 
     // 根据游戏结果显示信息
     QString endMessage;
-    if (response.IsEnd()) {
-        if (response.GetEndReason() == SurakartaEndReason::CHECKMATE) {
-            endMessage = "玩家 " + str_player(response.GetWinner()) + " 获胜!";
-        } else if (response.GetEndReason() == SurakartaEndReason::TIMEOUT) {
-            endMessage = "玩家 " + str_player(response.GetWinner()) + " 超时认输!";
-        } else {
-            endMessage = "游戏结束，失败原因: " + endReasonToString(response.GetEndReason());
-        }
+
+    if (game.game_info_->end_reason_ == SurakartaEndReason::CHECKMATE) {
+        endMessage = "玩家 " + str_player(game.game_info_->winner_) + " 获胜!";
+    } else if (game.game_info_->end_reason_ == SurakartaEndReason::TIMEOUT) {
+        endMessage = "玩家 " + str_player(game.game_info_->current_player_) + " 超时认输!" + "\n" + "Winner : " + str_player(game.game_info_->winner_);
     } else {
-        endMessage = "游戏结束";
+        endMessage = "游戏结束，失败原因 : " + endReasonToString(game.game_info_->end_reason_) + "\n" + "Winner : " + str_player(game.game_info_->winner_);
     }
+
 
     // 停止计时器
     timer->stop();
@@ -129,14 +134,9 @@ void MainWindow::endGame(const SurakartaMoveResponse& response)
         if (reply == QMessageBox::Yes) {
             // 重新开始游戏，包括重置参数和启动计时器
             restartGame();
-        } else {
-            QMessageBox::information(this, "操作结果", "用户选择了取消操作。");
         }
     }
 }
-
-
-
 
 
 QString MainWindow::endReasonToString(SurakartaEndReason endReason) {
@@ -198,8 +198,8 @@ void MainWindow::drawStone(QPainter &painter)
                 else if((*game.board_)[i][j]->color_ == PieceColor::WHITE)
                     brush.setColor(Qt::white);
                 painter.setBrush(brush);
-                if(is_select&&i==select_i&&j==select_j)
-                painter.drawEllipse(game.coordinate(i, j), (*game.board_)[i][j]->r_+10 , (*game.board_)[i][j]->r_+10);
+                if(is_select && i==select_i && j==select_j)
+                    painter.drawEllipse(game.coordinate(i, j), (*game.board_)[i][j]->expand_r_ , (*game.board_)[i][j]->expand_r_);
                 else
                     painter.drawEllipse(game.coordinate(i, j), (*game.board_)[i][j]->r_, (*game.board_)[i][j]->r_);
 
@@ -222,6 +222,7 @@ void MainWindow::updatePlayerInfo()
 {
     ui->label->setText("Current_Player : " + str_player(game.game_info_->current_player_));
 }
+
 void MainWindow::restartGame()
 {
     // 重置游戏参数
@@ -233,6 +234,7 @@ void MainWindow::restartGame()
     timer->start(1000);
     update();
 }
+
 void MainWindow::forfeitGame() {
     // 根据当前玩家确定哪个棋子认输
     SurakartaPlayer current_player = game.game_info_->current_player_;
@@ -247,7 +249,13 @@ void MainWindow::forfeitGame() {
     }
 
     // 重新开始游戏
-    restartGame();
+    game.game_info_->end_reason_=SurakartaEndReason::RESIGN;
+    SurakartaPlayer cp = game.game_info_->current_player_;
+    if(cp == PieceColor::BLACK)
+        game.game_info_->winner_ = PieceColor::WHITE;
+    else
+        game.game_info_->winner_ = PieceColor::BLACK;
+    endGame();
 }
 
 

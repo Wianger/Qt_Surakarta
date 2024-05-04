@@ -81,13 +81,13 @@ struct SurakartaPosition {
 class SurakartaPiece {
 public:
     SurakartaPiece()
-        : position_({0, 0}), color_(PieceColor::NONE) {}
+        : position_({0, 0}), color_(PieceColor::NONE), r_(0) {}
 
-    SurakartaPiece(unsigned int x, unsigned int y, PieceColor color)
-        : position_({x, y}), color_(color) {}
+    SurakartaPiece(unsigned int x, unsigned int y, PieceColor color, unsigned int r)
+        : position_({x, y}), color_(color), r_(r) {}
 
-    SurakartaPiece(SurakartaPosition position, PieceColor color)
-        : position_(position), color_(color) {}
+    SurakartaPiece(SurakartaPosition position, PieceColor color, unsigned int r)
+        : position_(position), color_(color), r_(r) {}
 
     void SetPosition(SurakartaPosition position) { position_ = position; }
     void SetColor(PieceColor color) { color_ = color; }
@@ -107,7 +107,8 @@ public:
     //    private:
     SurakartaPosition position_;
     PieceColor color_;
-    unsigned int r_ = 30;
+    unsigned int r_;
+    unsigned int expand_r_ = r_*1.25;
     unsigned int sr_=35;
 };
 
