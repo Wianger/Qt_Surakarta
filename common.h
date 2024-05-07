@@ -10,7 +10,7 @@ struct SurakartaMove {
     SurakartaPosition to;
     SurakartaPlayer player;
     SurakartaMove()
-        : from(0, 0), to(0, 0), player(SurakartaPlayer::NONE) {}
+        : from(-1, -1), to(-1, -1), player(SurakartaPlayer::NONE) {}
     SurakartaMove(unsigned int from_x, unsigned int from_y, unsigned int to_x, unsigned int to_y, SurakartaPlayer player)
         : from(from_x, from_y), to(to_x, to_y), player(player) {}
     SurakartaMove(SurakartaPosition from, SurakartaPosition to, SurakartaPlayer player)
@@ -29,7 +29,6 @@ struct SurakartaGameInfo {
     SurakartaPlayer winner_;
     unsigned int max_no_capture_round_;
     SurakartaPosition from, to;
-
 
     SurakartaGameInfo(unsigned int max_no_capture_round = 40)
         : current_player_(SurakartaPlayer::BLACK),

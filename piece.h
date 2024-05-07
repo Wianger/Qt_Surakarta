@@ -109,7 +109,6 @@ public:
     PieceColor color_;
     unsigned int r_;
     unsigned int expand_r_ = r_*1.25;
-    unsigned int sr_=35;
 };
 
 #endif // PIECE_H

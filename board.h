@@ -6,7 +6,7 @@
 #include "piece.h"
 #include <QPoint>
 
-#define BOARD_SIZE 20
+#define BOARD_SIZE 6
 
 class SurakartRow : public std::vector<std::shared_ptr<SurakartaPiece>> {
 public:

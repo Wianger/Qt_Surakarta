@@ -1,5 +1,6 @@
 #include "game.h"
 #include <fstream>
+#include <QTimer>
 
 void SurakartaGame::StartGame(std::string file_name) {
     if (file_name.empty()) {
@@ -56,8 +57,10 @@ SurakartaMoveResponse SurakartaGame::Move(const SurakartaMove& move) {
         (*board_)[move.from.x][move.from.y]->SetPosition(move.from);
         rule_manager_->OnUpdateBoard();
     } else if (move_reason == SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE) {
-        (*board_)[move.to.x][move.to.y] = (*board_)[move.from.x][move.from.y];
-        (*board_)[move.to.x][move.to.y]->SetPosition(move.to);
+        is_captured = true, start = true;
+        mf = move.from, mt = move.to;
+        /*(*board_)[move.to.x][move.to.y] = (*board_)[move.from.x][move.from.y];
+        (*board_)[move.to.x][move.to.y]->SetPosition(move.to);*/
         (*board_)[move.from.x][move.from.y] = std::make_shared<SurakartaPiece>(move.from.x, move.from.y, PieceColor::NONE, piece_r);
         rule_manager_->OnUpdateBoard();
     }

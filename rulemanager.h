@@ -44,6 +44,9 @@ public:
     unsigned int board_size_;
     std::shared_ptr<const SurakartaBoard> board_;
     std::shared_ptr<const SurakartaGameInfo> game_info_;
+    unsigned int circle;
+    int clockwise;
+    int road;
 
 public:
     // TODO:
