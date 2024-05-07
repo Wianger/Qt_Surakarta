@@ -1,3 +1,4 @@
+
 #include "rulemanager.h"
 #include <cstdlib>
 #include <iostream>
@@ -120,33 +121,21 @@ SurakartaIllegalMoveReason SurakartaRuleManager::JudgeMove(const SurakartaMove& 
                     int id = piece[x].size() - 1;
                     if (mf == piece[x][id].position_ && mf == piece[y][0].position_)
                         // 特判争议下法
-                        if (mt == piece[y][1].position_){
-                            circle = i, clockwise = -1;
-                            road = x;
+                        if (mt == piece[y][1].position_)
                             return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                        }
-                    if (mf == piece[x][id].position_ && mt == piece[y][0].position_){
+                    if (mf == piece[x][id].position_ && mt == piece[y][0].position_)
                         // the source position是X上最后一个棋子，the target position是Y上第一个棋子
-                        circle = i, clockwise = -1;
-                        road = x;
                         return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                    }
                 }
                 // 考虑顺时针吃子的情况，相当于由target position到source position
                 if ((ftemp.x == y || ftemp.y == y) && (ttemp.x == x || ttemp.y == x)) {
                     int id = piece[x].size() - 1;
                     if (mf == piece[y][0].position_ && mf == piece[x][id].position_)
                         if (mt == piece[x][id - 1].position_)
-                    if (mf == piece[y][0].position_ && mt == piece[x][id].position_){
-                        circle = i, clockwise = 1;
-                        road = y;
+                            return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
+                    if (mf == piece[y][0].position_ && mt == piece[x][id].position_)
                         return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                    }
-                    {
-                        circle = i, clockwise = 1;
-                        road = y;
-                        return SurakartaIllegalMoveReason::LEGAL_CAPTURE_MOVE;
-                    }        }
+                }
             }
         }
         return SurakartaIllegalMoveReason::ILLIGAL_CAPTURE_MOVE;

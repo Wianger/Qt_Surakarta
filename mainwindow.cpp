@@ -24,9 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
     QPushButton *forfeitButton = new QPushButton("认输", this);
     forfeitButton->setGeometry(800, 150, 100, 40); // 设置按钮的位置和大小
     connect(forfeitButton, &QPushButton::clicked, this, &MainWindow::forfeitGame);
-
-    tm.setInterval(10);
-    connect(&tm, &QTimer::timeout, this, &MainWindow::MovePiece);
 }
 
 MainWindow::~MainWindow()
@@ -51,13 +48,6 @@ void MainWindow::paintEvent(QPaintEvent *)
     drawLine(painter);
     for (unsigned int var = 1; var < game.board_size_ / 2; ++var)
         drawCycle(painter, game.board_->squareSize * var);
-
-    if(game.start){
-        piece = game.coordinate(game.mf.x, game.mf.y);
-        Set_Stra_Rot();
-        game.start = false;
-        tm.start();
-    }
     drawStone(painter);
 }
 
@@ -219,14 +209,6 @@ void MainWindow::drawStone(QPainter &painter)
             }
         }
     }
-    if(game.is_captured){
-        if(game.game_info_->current_player_ == PieceColor::BLACK)
-            brush.setColor(Qt::white);
-        else
-            brush.setColor(Qt::black);
-        painter.setBrush(brush);
-        painter.drawEllipse(piece, game.piece_r, game.piece_r);
-    }
 }
 
 QString MainWindow::str_player(SurakartaPlayer pl)
@@ -253,7 +235,6 @@ void MainWindow::restartGame()
     updatePlayerInfo();
     countDown = CountDown;
     timer->start(1000);
-    game.start = false, game.is_captured = false;
     update();
 }
 
@@ -278,94 +259,4 @@ void MainWindow::forfeitGame() {
         game.game_info_->winner_ = PieceColor::BLACK;
     endGame();
 }
-
-void MainWindow::Set_Stra_Rot()
-{
-    if(piece.x() == game.coordinate(0, 0).x() || piece.x() == game.coordinate(game.board_size_ - 1, 0).x()){
-        rotation = true;
-        Set_Circle();
-    }
-    else if(piece.y() == game.coordinate(0, 0).y() || piece.y() == game.coordinate(0, game.board_size_ - 1).y()){
-        rotation = true;
-        Set_Circle();
-    }
-    else
-        rotation = false, straight = true;
-}
-
-void MainWindow::MovePiece_Circle()
-{
-    piece.setX(center.x() + (game.board_->squareSize * game.rule_manager_->circle) * cos(angle));
-    piece.setY(center.y() + (game.board_->squareSize * game.rule_manager_->circle) * sin(angle));
-    angle += (PI / 60) * (game.rule_manager_->clockwise);
-}
-
-void MainWindow::MovePiece_line()
-{
-    int clock = game.rule_manager_->clockwise;
-    switch (game.rule_manager_->road) {
-    case 0:
-        piece.setY(piece.y() - 0.1 * clock);
-        break;
-    case 1:
-        piece.setX(piece.x() - 0.1 * clock);
-        break;
-    case 2:
-        piece.setY(piece.y() + 0.1 * clock);
-        break;
-    case 3:
-        piece.setX(piece.x() + 0.1 * clock);
-        break;
-    default:
-        break;
-    }
-}
-
-void MainWindow::MovePiece()
-{
-    if(piece == game.coordinate(game.mt.x, game.mt.y))
-        game.is_captured = false;
-    else{
-        if(straight)
-            MovePiece_line();
-        else if(rotation){
-            MovePiece_Circle();
-        }
-    }
-}
-
-void MainWindow::Set_Center()
-{
-    int road = game.rule_manager_->road, clock = game.rule_manager_->clockwise;
-    unsigned int size = game.board_size_;
-    if((road == 0 && clock == 1) || (road == 3 && clock == -1))
-        center = game.coordinate(0, 0);
-    else if((road == 0 && clock == -1) || (road == 1 && clock == 1))
-        center = game.coordinate(0, size - 1);
-    else if((road == 2 && clock == -1) || (road == 3 && clock == 1))
-        center = game.coordinate(size - 1, 0);
-    else if((road == 1 && clock == -1) || (road == 2 && clock == 1))
-        center = game.coordinate(size - 1, size - 1);
-}
-
-void MainWindow::Set_Angle()
-{
-    int road = game.rule_manager_->road;
-    if(road == 0)
-        angle = 0;
-    else if(road == 1)
-        angle = PI / 2;
-    else if(road == 2)
-        angle = PI;
-    else if(road == 3)
-        angle = - PI / 2;
-}
-
-void MainWindow::Set_Circle()
-{
-    Set_Center();
-    Set_Angle();
-}
-
-
 

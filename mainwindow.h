@@ -41,28 +41,13 @@ public:
     void restartGame();
     void forfeitGame();
 
-    QPointF piece;
-    int ini_angle;
-    double angle;
-    QPointF center;
-    bool is_initial = false;
-    bool straight = false, rotation = false;
-    void Set_Stra_Rot();
-    void MovePiece_line();
-    void MovePiece_Circle();
-    void Set_Center();
-    void Set_Angle();
-    void Set_Circle();
-
 private:
     Ui::MainWindow *ui;
     int countDown;  // 倒计时剩余秒数
     QTimer *timer;  // 定时器对象
-    QTimer tm;
 
 private slots:
     void updateCountdown();
-    void MovePiece();
 
 
 

@@ -99,8 +99,5 @@ public:
     unsigned int piece_r = 180 / board_size_;
     bool GetRowCol(QPointF, QPointF);
     QPoint coordinate(int i, int j);
-    bool is_captured = false, start = false;
-    SurakartaPosition mf, mt;
-
 };
 #endif // GAME_H
